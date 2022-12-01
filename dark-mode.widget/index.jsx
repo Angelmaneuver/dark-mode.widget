@@ -24,14 +24,6 @@ const transparency     = (base) => {
   return base;
 }
 
-export let   refreshFrequency = (() => {
-  const now     = new Date();
-  const seconds = 60 - now.getSeconds();
-  const minutes = 60 - now.getMinutes() - (0 !== seconds ? 1 : 0);
-
-  return (minutes * 60 * 1000) + (seconds * 1000);
-})();
-
 export const Background       = () => {
   return css`
     height:     100vh;
@@ -40,8 +32,35 @@ export const Background       = () => {
   `;
 }
 
-export const command          = () => {
-  refreshFrequency = 60 * 60 * 1000;
+export const refreshFrequency = false;
+
+export const command          = undefined;
+
+export const init             = (dispatch) => {
+	setTimeout(
+        () => {
+            dispatch({});
+            setInterval(
+                () => { dispatch({}); },
+                1 * 60 * 60 * 1000
+            );
+        },
+        (() => {
+            const now     = new Date();
+            const seconds = 60 - now.getSeconds();
+            const minutes = 60 - (now.getMinutes() + (0 !== seconds ? 1 : 0));
+
+            return (minutes * 60 * 1000) + (seconds * 1000);
+        })()
+	);
+}
+
+export const updateState      = (event, previousState) => {
+	if (event.error) {
+		return { ...previousState, warning: `We got an error: ${event.error}` };
+	}
+
+	return { ...previousState };
 }
 
 export const render           = () => {
